@@ -116,8 +116,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Load PCA
-    pca = joblib.load(args.pca)
-    input_dim = pca.n_components_
+    input_dim = None
 
     datasets = []
     all_labels = []
@@ -134,8 +133,10 @@ def main():
         X = np.load(x_path)
         y = np.load(y_path)
 
+        if input_dim is None:
+            input_dim = X.shape[1]
+
         # 🔑 apply global PCA ONCE
-        X = pca.transform(X)
 
         datasets.append(HighlightDataset(X, y, args.seq_len))
         all_labels.append(torch.from_numpy(y))
